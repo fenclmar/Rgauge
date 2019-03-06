@@ -1,17 +1,17 @@
-##########################################################
-########  FUNCTIONS FOR RAIN GAUGE CALIBRATION    ########
-########  Author: Martin Fencl, CVUT (31.5.2013)  ########
-########  Last update: 13/02/2019                 ########
-##########################################################
+
+# ===========================================================
+#  FUNCTIONS FOR RAIN GAUGE CALIBRATION AND PROCESSING
+#  Author: Martin Fencl, CVUT (2019)
 
 # Functions for processing rain gauge data designed specifically for
 # Rain gauges and weather stations manufactured by  FIEDLER AMS s.r.o. 
 # (https://www.fiedler.company/):
 # Includes:
-# - reading of logged data (in different formates)
-# - dynamic calibration of rain gauge data
-# - data cleaning
 # - evaluation of laboratory (dynamic) calibraiton of rain gauges
+# - dynamic calibration of rain gauge data
+# - reading of logged data (in different formates)
+# - data cleaning and processing
+# - analysis of rain gauge data
 
 
 
@@ -373,5 +373,109 @@ reg_series <- function(dat, step){
     
     return(dat2)
 }
+
+
+
+# =============================
+
+# Rain gauge statistics
+
+identify_Revents <- function(R, win.max = 30, min.len=10) {
+  
+  ## function to identify rainy periods from RG series of regular time step
+  ## Inputs:  
+  ##          R -  time series with rain rates from one (vector) or more (matrix)
+  ##               rain gauges
+  ##          win.max - maximum size of dry window between two wet time steps
+  ##                   to assume them to belong to same rain event
+  ##          min.len - minimum length of period [minutes] to assume it as event
+  ## Outputs:  data frame with begginings and ends of rainfall periods
+  
+  #argument test and parameter replication
+  
+  tim <- index(R)
+  mtx <- coredata(R)
+  mtx <- as.matrix(mtx)
+  
+  if(missing(win.max)==T){win.max <- 30}
+  if(missing(min.len)==T){min.len <- 10}
+  
+  #drywet vecotr
+  drywet0 <- apply(mtx!=0, 1, sum)
+  drywet0 <- drywet0!=0
+  
+  #find wet weather time stamps and time difference between them
+  wet.tim <- tim[which(drywet0 > 0)]
+  wet.int <- as.numeric(wet.tim[-1]) - as.numeric(wet.tim[-length(wet.tim)])
+  
+  #find begginings and ends of events
+  ev.st <- c(wet.tim[1], wet.tim[which(wet.int > win.max*60)+1])
+  ev.en <- c(wet.tim[which(wet.int > win.max*60)], wet.tim[length(wet.tim)])
+  
+  event.times <- data.frame("st" = ev.st, "en"=ev.en)
+  event.times <- event.times[-which(difftime(ev.en, ev.st, "mins") < min.len), ] 
+  
+  return(event.times)
+}
+
+
+
+
+summarize_singleRevent <- function(R, na.rm = T) {
+  ## function to provide summary statistics of rainfall events 
+  ##
+  ## Inputs:  R  -  time series with rain rate from a single instrument
+  ##
+  ## Outputs: res - vector with basic rainfall statistics
+  
+  res <- c("duration" = NA, "height" = NA, "Rmax" = NA, "Rmax10" = NA)
+
+
+  if(length(R)==0){return(res)}else{
+    
+    res[1] <- difftime(end(R), start(R), units="mins") #duration of rainfall
+    res[2] <- sum(R, na.rm = na.rm)/60    #total height of rainfall [mm]
+    res[3] <- max(R, na.rm = na.rm)       #max rain rate [mm/h]
+    
+    if(length(R) < 10){               #max 10min rain rate [mm/h]
+      res[4] <- sum(R, na.rm = na.rm) / 10
+    }else{
+      res[4] <- max(rollapply(R, 10, mean, na.rm = na.rm), na.rm = na.rm) 
+    }
+  }
+  
+  return(res)
+}  
+
+
+
+summarize_Revents <- function (R, st = NULL, en = NULL, na.rm = T) {
+  ## function to provide summary statistics of rainfall events 
+  ##
+  ## Inputs:  R  -  time series with rain rate from a single instrument
+  ##          st  -  vector with times where the interval begins
+  ##          en  -  vector with times where the interval ends
+  ##
+  ## Outputs: tab - table
+  
+  if (is.null(st)) {st <- start(R)}
+  if (is.null(en)) {en <- end(R)}
+  if (length(st) != length(en)) {stop('st and en vectors do not have the same length!')}
+
+  tab <- data.frame("start" = st, "end" = en, "duration" = NA, "height" = NA,
+                    "Rmax" = NA, "Rmax10" = NA)
+  tab[ ,1] <- st
+  tab[ ,2] <- en
+  
+  for (i in 1 : length(st)) {
+    tab[i, 3 : 6] <- summarize_singleRevent(window(R, start = st[i], end = en[i]), na.rm = na.rm)
+  }
+  
+  return(tab)
+}  
+
+
+
+
 
 
