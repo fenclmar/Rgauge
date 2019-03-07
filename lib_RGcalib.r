@@ -431,8 +431,10 @@ summarize_singleRevent <- function(R, na.rm = T) {
   res <- c("duration" = NA, "height" = NA, "Rmax" = NA, "Rmax10" = NA)
 
 
-  if(length(R)==0){return(res)}else{
-    
+  if (length(which(!is.na(R))) == 0){
+    return(res)
+  } else {
+
     res[1] <- difftime(end(R), start(R), units="mins") #duration of rainfall
     res[2] <- sum(R, na.rm = na.rm)/60    #total height of rainfall [mm]
     res[3] <- max(R, na.rm = na.rm)       #max rain rate [mm/h]
