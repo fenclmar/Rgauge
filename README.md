@@ -2,7 +2,7 @@
 Functions for rain gauge calibration and data processing. Designed specifically for rain gauges and weather stations manufactured
 by FIEDLER AMS s.r.o. (https://www.fiedler.company/)
 
-#Instalation
+# Instalation
 The repo is currently not ready to be directly compiled to R package. Install function by sourcing the lib_RGcalib.r file.
 
 ```
