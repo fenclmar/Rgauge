@@ -389,8 +389,8 @@ identify_Revents <- function(R, win.max = 30, min.len=10, NAs = 'na.or.complete'
   ##          win.max - maximum size of dry window between two wet time steps
   ##                   to assume them to belong to same rain event
   ##          min.len - minimum length of period [minutes] to assume it as event
-  ##          NAs - 'pass', 'remove', 'pass.or.remove', should NAs be passed,
-  ##                 removed, or removed unless there are only NAs.
+  ##          NAs - 'pass', 'remove', 'pass.or.remove'. Should NAs be passed,
+  ##                 removed, or removed unless there is at least one non-NA value?
   ## Outputs:  data frame with begginings and ends of rainfall periods
   
   #argument test and parameter replication
