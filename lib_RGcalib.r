@@ -397,7 +397,7 @@ identify_Revents <- function(R, win.max = 30, min.len=10, NAs = 'na.or.complete'
   
   tim <- index(R)
   mtx <- coredata(R)
-  mtx <- as.matrix(mtx)
+  mtx <- as.matrix(mtx) 
   
   if(missing(win.max)==T){win.max <- 30}
   if(missing(min.len)==T){min.len <- 10}
