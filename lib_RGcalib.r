@@ -442,13 +442,8 @@ identify_Revents <- function(R, win.max = 30, min.len = 10, NAs = 'pass.or.rm') 
 
 
 
-
-<<<<<<< HEAD
-summarize_singleRevent <- function (R, na.rm = T) {
-=======
-
 summarize_singleRevent <- function(R, na.rm = T) {
->>>>>>> 04d6445c0968297dcddc082ffe806f75331170eb
+
   ## function to provide summary statistics of rainfall events 
   ##
   ## Inputs:  R  -  time series with rain rate from a single instrument
