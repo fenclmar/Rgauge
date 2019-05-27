@@ -380,7 +380,7 @@ reg_series <- function(dat, step){
 
 # Rain gauge statistics
 
-identify_Revents <- function(R, win.max = 30, min.len=10) {
+identify_Revents <- function(R, win.max = 30, min.len=10, NAs = 'na.or.complete') {
   
   ## function to identify rainy periods from RG series of regular time step
   ## Inputs:  
@@ -389,20 +389,42 @@ identify_Revents <- function(R, win.max = 30, min.len=10) {
   ##          win.max - maximum size of dry window between two wet time steps
   ##                   to assume them to belong to same rain event
   ##          min.len - minimum length of period [minutes] to assume it as event
+  ##          NAs - 'pass', 'remove', 'pass.or.remove', should NAs be passed,
+  ##                 removed, or removed unless there are only NAs.
   ## Outputs:  data frame with begginings and ends of rainfall periods
   
   #argument test and parameter replication
   
   tim <- index(R)
   mtx <- coredata(R)
-  mtx <- as.matrix(mtx)
+  mtx <- as.matrix(mtx) 
   
   if(missing(win.max)==T){win.max <- 30}
   if(missing(min.len)==T){min.len <- 10}
-  
+
   #drywet vecotr
-  drywet0 <- apply(mtx!=0, 1, sum)
-  drywet0 <- drywet0!=0
+  nas.count <- apply(apply(mtx, 2, is.na), 1, sum)
+  if (NAs %in%  c('pass', 'rm', 'pass.or.rm') == F){
+    stop('Argument NAs has to be \'pass\', \'rm\', \'pass.or.rm\'')
+  }
+
+  
+  if (NAs == 'pass') {
+    drywet0 <- apply(mtx!=0, 1, sum) != 0
+  }
+  
+  if (NAs == 'rm') {
+    if (sum(nas.count == ncol(mtx)) > 0) {
+      warning('one or more rows with no non-NA values were classified as dry')
+    }
+    drywet0 <- apply(mtx!=0, 1, sum, na.rm = T) != 0
+  }
+  
+  if (NAs == 'pass.or.rm') {
+    drywet0 <- apply(mtx!=0, 1, sum, na.rm = T)
+    drywet0[nas.count > nrow(mtx)] <- NA
+    drywet0 <- drywet0 != 0
+  }
   
   #find wet weather time stamps and time difference between them
   wet.tim <- tim[which(drywet0 > 0)]
@@ -417,6 +439,7 @@ identify_Revents <- function(R, win.max = 30, min.len=10) {
   
   return(event.times)
 }
+
 
 
 
