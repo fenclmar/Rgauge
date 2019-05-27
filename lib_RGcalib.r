@@ -380,7 +380,7 @@ reg_series <- function(dat, step){
 
 # Rain gauge statistics
 
-identify_Revents <- function(R, win.max = 30, min.len=10, NAs = 'na.or.complete') {
+identify_Revents <- function(R, win.max = 30, min.len = 10, NAs = 'pass.or.rm') {
   
   ## function to identify rainy periods from RG series of regular time step
   ## Inputs:  
@@ -389,7 +389,7 @@ identify_Revents <- function(R, win.max = 30, min.len=10, NAs = 'na.or.complete'
   ##          win.max - maximum size of dry window between two wet time steps
   ##                   to assume them to belong to same rain event
   ##          min.len - minimum length of period [minutes] to assume it as event
-  ##          NAs - 'pass', 'remove', 'pass.or.remove'. Should NAs be passed,
+  ##          NAs - 'pass', 'remove', 'pass.or.rm'. Should NAs be passed,
   ##                 removed, or removed unless there is at least one non-NA value?
   ## Outputs:  data frame with begginings and ends of rainfall periods
   
@@ -422,7 +422,7 @@ identify_Revents <- function(R, win.max = 30, min.len=10, NAs = 'na.or.complete'
   
   if (NAs == 'pass.or.rm') {
     drywet0 <- apply(mtx!=0, 1, sum, na.rm = T)
-    drywet0[nas.count > nrow(mtx)] <- NA
+    drywet0[nas.count > ncol(mtx)] <- NA
     drywet0 <- drywet0 != 0
   }
   
