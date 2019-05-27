@@ -5,7 +5,9 @@ by FIEDLER AMS s.r.o. (https://www.fiedler.company/)
 #Instalation
 The repo is currently not ready to be directly compiled to R package. Install function by sourcing the lib_RGcalib.r file.
 
+```
 source(url('https://raw.githubusercontent.com/fenclmar/Rgauge/master/lib_RGcalib.r'))
+```
 
 The functions include comments which mostly provide a basic info what a function does and an info about the arguments and outputs
 of a function. The functions are intended for these tasks:
