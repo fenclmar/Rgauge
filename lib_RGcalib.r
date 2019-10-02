@@ -435,7 +435,7 @@ identify_Revents <- function(R, win.max = 30, min.len = 10, NAs = 'pass.or.rm') 
   ev.en <- c(wet.tim[which(wet.int > win.max*60)], wet.tim[length(wet.tim)])
   
   event.times <- data.frame("st" = ev.st, "en"=ev.en)
-  event.times <- event.times[-which(difftime(ev.en, ev.st, units = "mins") < min.len), ] 
+  event.times <- event.times[which(difftime(ev.en, ev.st, units = "mins") >= min.len), ] 
   
   return(event.times)
 }
