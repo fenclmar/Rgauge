@@ -374,6 +374,49 @@ reg_series <- function(dat, step){
     return(dat2)
 }
 
+###################
+
+
+connect_series <- function (s1, s2) {
+  ## functtion to connect two time series and check for and filter out possible
+  ## ovelap
+  
+  ##@Arguments:
+  ##@ s1 - original time series 
+  ##  s2 - time series to be connected
+  
+  require(zoo)
+  
+  s1 <- as.zoo(s1)
+  s2 <- as.zoo(s2)
+  
+  # 
+  if (start(s1) > start(s2)) {
+    stop('original time series starts earlier than time series to be connected!')
+  }
+  
+  # s2 starts before (or when) s2 ends
+  if (start(s2) <= end(s2)) {
+    
+    # tuncate s2
+    s2 <- window(s2, start = end(s1) + .1, end = end(s2))
+    
+    # check overlap
+    s1_overlap <- window(s1, start = start(s2), end = end(s1))
+    s2_overlap <- window(s2, start = start(s2), end = end(s1))
+    if(length(s1_overlap) != length(s2_overlap)) {
+      warning('overlapping parts of s1 and s2 have different number of elements!')
+    } else {
+      if (sum(s1_overlap == s2_overlap) != length(s1_overlap)) {
+        warning('some elements of s1-s2 overlap have different values!')
+      }
+    }
+  }
+  
+  s <- rbind(s1, s2)
+  return(s)
+  
+}
 
 
 # =============================
