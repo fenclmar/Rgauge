@@ -309,7 +309,7 @@ zoo_aggreg_by <- function(x_zoo, step, fun, align = 'center',
     
     tim_agr <-  as.POSIXct(t_num, origin="1970-01-01 00:00:00 UTC") #time indexes for aggregtion
     
-    ag_zoo <- aggregate(x_zoo, list(tim_agr), fun)
+    ag_zoo <- aggregate(x_zoo, list(tim_agr), fun, ...)
     
     if(is.regular(ag_zoo, strict = T) == F) {
         if(insert.missing == T){
