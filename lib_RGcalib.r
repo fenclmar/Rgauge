@@ -487,13 +487,15 @@ identify_Revents <- function(R, win.max = 30, min.len = 10, NAs = 'pass.or.rm') 
 
 summarize_singleRevent <- function(R, na.rm = T) {
 
-  ## function to provide summary statistics of rainfall events 
+  ## function to provide summary statistics of rainfall events in mm/h
   ##
   ## Inputs:  R  -  time series with rain rate from a single instrument
   ##
   ## Outputs: res - vector with basic rainfall statistics
+  
   require(zoo)
-  dt <- periodicity(R)$frequency / 60 # time step in minutes
+  dt <- periodicity(R)$frequency / 3600 # time step in hours
+  
   res <- c("duration" = NA, "height" = NA, "Rmax" = NA, "Rmax10" = NA)
 
 
@@ -502,11 +504,11 @@ summarize_singleRevent <- function(R, na.rm = T) {
   } else {
 
     res[1] <- difftime(end(R), start(R), units="mins") #duration of rainfall
-    res[2] <- sum(R, na.rm = na.rm) / dt    #total height of rainfall [mm]
+    res[2] <- sum(R, na.rm = na.rm) * dt    #total height of rainfall [mm]
     res[3] <- max(R, na.rm = na.rm)       #max rain rate [mm/h]
     
     if(length(R) < 10){               #max 10min rain rate [mm/h]
-      res[4] <- sum(R, na.rm = na.rm) / (10 * dt)
+      res[4] <- sum(R, na.rm = na.rm) * dt / 10
     }else{
       res[4] <- max(rollapply(R, 10, mean, na.rm = na.rm), na.rm = na.rm) 
     }
