@@ -524,7 +524,7 @@ summarize_singleRevent <- function(R, dt = NA, na.rm = T) {
 
 
 
-summarize_Revents <- function (R, st = NULL, en = NULL, na.rm = T) {
+summarize_Revents <- function (R, st = NULL, en = NULL, na.rm = T, dt = NA) {
   ## function to provide summary statistics of rainfall events 
   ##
   ## Inputs:  R  -  time series with rain rate from a single instrument
@@ -543,7 +543,7 @@ summarize_Revents <- function (R, st = NULL, en = NULL, na.rm = T) {
   tab[ ,2] <- en
   
   for (i in 1 : length(st)) {
-    tab[i, 3 : 6] <- summarize_singleRevent(window(R, start = st[i], end = en[i]), na.rm = na.rm)
+    tab[i, 3 : 6] <- summarize_singleRevent(window(R, start = st[i], end = en[i]), dt = dt, na.rm = na.rm)
   }
   
   return(tab)
