@@ -498,7 +498,7 @@ summarize_singleRevent <- function(R, dt = NA, na.rm = T) {
     
   if (is.na(dt)){
     dt <- as.numeric(index(R[-1])) - as.numeric(index(R[-length(R)])) # in seconds
-    dt <- mean(dt, na.rm = T) / 60
+    dt <- mean(dt, na.rm = T) / 3600 # in hours
   }  
   
   res <- c("duration" = NA, "height" = NA, "Rmax" = NA, "Rmax10" = NA)
