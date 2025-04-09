@@ -501,7 +501,7 @@ summarize_singleRevent <- function(R, dt = NA, na.rm = T) {
     dt <- mean(dt, na.rm = T) / 3600 # in hours
   }  
   
-  res <- c("duration" = NA, "height" = NA, "Rmax" = NA, "Rmax10" = NA)
+  res <- c("duration" = NA, "height" = NA, "Rmax" = NA, "Rmax10" = NA, 'tPeak' = NA)
 
 
   if (length(which(!is.na(R))) == 0){
@@ -514,8 +514,13 @@ summarize_singleRevent <- function(R, dt = NA, na.rm = T) {
     
     if(length(R) < 10){               #max 10min rain rate [mm/h]
       res[4] <- sum(R, na.rm = na.rm) * dt / 10
+      tPeak <- index(R)[R == max(R)]
+      res[5] <- tPeak[ceiling(length(tPeak) / 2)]
     }else{
-      res[4] <- max(rollapply(R, 10, mean, na.rm = na.rm), na.rm = na.rm) 
+      r10 <- rollapply(R, 10, mean, na.rm = na.rm)
+      res[4] <- max(r10, na.rm = na.rm) 
+      tPeak <- index(r10)[r10 == res[4]]
+      res[5] <- tPeak[ceiling(length(tPeak) / 2)]
     }
   }
   
