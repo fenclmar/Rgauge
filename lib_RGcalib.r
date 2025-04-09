@@ -543,13 +543,14 @@ summarize_Revents <- function (R, st = NULL, en = NULL, na.rm = T, dt = NA) {
   if (length(st) != length(en)) {stop('st and en vectors do not have the same length!')}
 
   tab <- data.frame("start" = st, "end" = en, "duration" = NA, "height" = NA,
-                    "Rmax" = NA, "Rmax10" = NA)
+                    "Rmax" = NA, "Rmax10" = NA, 'tPeak10' = NA)
   tab[ ,1] <- st
   tab[ ,2] <- en
   
   for (i in 1 : length(st)) {
-    tab[i, 3 : 6] <- summarize_singleRevent(window(R, start = st[i], end = en[i]), dt = dt, na.rm = na.rm)
+    tab[i, 3 : 7] <- summarize_singleRevent(window(R, start = st[i], end = en[i]), dt = dt, na.rm = na.rm)
   }
+  tab$tPeak10 <- as.POSIXct(tab$tPeak10)
   
   return(tab)
 }  
